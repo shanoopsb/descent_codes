@@ -29,6 +29,24 @@ Omega = [0;0;7.29211*10^-5];       % rotation of Earth in ECI
 Reci2ned = eci2tcr(lat,long);
 omega    = Reci2ned*Omega;         % rotation of Earth in NED
 
+param.omega = omega;
+
+ft2m  = 0.3048;                    % Feet to meters 
+
+RE =  2.0925741 * 10^7 * ft2m;
+RP =  2.0855590 * 10^7 * ft2m;
+Mu =  1.4076539 * 10^16 * ft2m^3;
+
+K = (RE/RP)^2;
+lat_c = atan(tan(lat)/K);
+Rs = RE/sqrt(1 + (K-1)*sin(lat_c)^2);
+
+rI = Rs*[cos(lat_c)*cos(long);cos(lat)*sin(long);sin(lat)]; % Target position in ECI
+rT = Reci2ned*rI; 
+
+gT = -Mu*rT/(norm(rT))^3;
+
+param.rT = rT;
 
 %% Initial Conditions
 
