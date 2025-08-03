@@ -1,6 +1,8 @@
 function [gx,gy,gz] = gravityfn(x,y,z,N,param)
 
 rT = param.rT;
+Mu = param.Mu;
+
 
 gx = zeros(N+1,1);
 gy = zeros(N+1,1);

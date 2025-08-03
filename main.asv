@@ -81,7 +81,7 @@ psif    = deg2rad(90);
 icf = [xf;yf;zf;vxf;vyf;vzf;mf;thetaf;psif];
 
 %% PS framework
-N     = 24;
+N     = 30;
 [tau,D] = Dleg(N);
 tau  =  flip(tau);
 D    = -D;
@@ -121,24 +121,4 @@ Popt = fmincon(jfun,Pg,[],[],[],[],[],[],nonlcon,options);
 
 %% Post processing
 
-% Extract states
-x  = Popt(1:N+1);
-y  = Popt(N+2:2*N+2);
-z  = Popt(2*N+3:3*N+3);
-vx = Popt(3*N+4:4*N+4);
-vy = Popt(4*N+5:5*N+5);
-vz = Popt(5*N+6:6*N+6);
 
-M = Popt(6*N+7:7*N+7);
-
-theta = Popt(7*N+8:8*N+8);
-psi   = Popt(8*N+9:9*N+9);
-
-% Extract control
-utheta = Popt(9*N+10:10*N+10);
-upsi   = Popt(10*N+11:11*N+11);
-
-tf     = Popt(end);
-
-t0   = param.t0;
-Tout = t0 + (tf-t0)/2*(1+tau);
