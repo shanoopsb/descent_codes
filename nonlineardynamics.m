@@ -109,8 +109,8 @@ ceq = [ceq;bi;bf];
 
 Tmax = param.Tmax;
 
-c(1:N+1,1)     = -T - 0;
+c(1:N+1,1)     = -T + 1e-10;
 c(N+2:2*N+2,1) =  T - Tmax;
-c(2*N+3,1)     = -M(N+1) + mf;
+% c(2*N+3,1)     = -M(N+1) + mf;
 
 end
