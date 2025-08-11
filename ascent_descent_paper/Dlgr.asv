@@ -1,0 +1,74 @@
+function [x,D] = Dlgr(N)
+% Evaluate roots of R_n(x) = P_n(x) - P_{n-1}(x) in [-1,1]
+
+
+Np = N+1;
+x = cos(pi*(0:N)'/N);    % Initial guess: Chebyshev-like
+x = flipud(x);           % Order from -1 to 1
+x(1) = -1;               % Fix left endpoint
+
+xold = 2 * ones(size(x));
+P = zeros(N+1, N+1);     % Legendre polynomial table
+
+j = 0;
+while max(abs(x-xold)) > eps
+
+    xold = x;
+
+    P(:,1) = 1;
+    P(:,2) = x;
+    
+
+    for k = 2:N
+        P(:,k+1) = 1/k*((2*k-1)*x.*P(:,k) - (k-1)*P(:,k-1));
+    end
+    
+    Rn  = P(:,N+1) - P(:,N);
+    
+    pd1 = Np*((P(:,N)  - x.*P(:,Np))./(1 - x.^2));
+    pd2 = N *((P(:,N-1) - x.*P(:,N))./(1 - x.^2));
+
+    Rnd = pd1 - pd2;
+   
+    x(2:end-1,1) = xold(2:end-1) - Rn(2:end-1)./Rnd(2:end-1);
+    
+end
+
+N = length(x) - 1;
+D = zeros(N+1, N+1);
+
+    for k = 1:N+1
+        for i = 1:N+1
+            if k ~= i
+                sum_val = 0;
+                for l = 1:N+1
+                    if l ~= i
+                        prod_val = 1;
+                        for j = 1:N+1
+                            if j ~= i && j ~= l
+                                prod_val = prod_val * (x(k) - x(j)) / (x(i) - x(j));
+                            end
+                        end
+                        sum_val = sum_val + (1 / (x(i) - x(l))) * prod_val;
+                    end
+                end
+                D(k,i) = sum_val;
+            else
+                % Diagonal term: L_i'(x_i)
+                sum_val = 0;
+                for j = 1:N+1
+                    if j ~= i
+                        sum_val = sum_val + 1 / (x(i) - x(j));
+                    end
+                end
+                D(k,i) = sum_val;
+            end
+        end
+    end
+
+
+
+
+
+end
+

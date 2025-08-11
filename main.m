@@ -48,20 +48,34 @@ gT = -Mu*rT/(norm(rT))^3;
 
 param.rT = rT;
 param.Mu = Mu;
+
+%% PS framework
+
+N     = 40;  % input this number to be even to adjust given initial guess 
+[tau,D] = Dlgr(N); 
+
+% tau  =  flip(tau); % if 'Dlgr' is used comment this line and below line
+% D    = -D;
+
+options = optimoptions("fmincon",'Algorithm','sqp','Display','iter',...
+                       'MaxFunctionEvaluations',1000000,'MaxIterations',1000);
+
+
 %% Initial Conditions
 
-x0 =  40*1000;
-y0 =  35*1000;
-z0 = -90*1000;
+x0 =  25*1000;
+
+y0 =  30*1000;
+z0 = -120*1000;
 
 vx0 = 0.5;
 vy0 = 1;
-vz0 = 0.1;
+vz0 = -0.1;
 
 m0 = 47653.153;
 
-theta0 = deg2rad(0);
-psi0   = deg2rad(0);
+theta0 = deg2rad(150);
+psi0   = deg2rad(130);
 
 ic0 = [x0;y0;z0;vx0;vy0;vz0;m0;theta0;psi0];
 %% FInal conditions
@@ -80,14 +94,6 @@ psif    = deg2rad(90);
 
 icf = [xf;yf;zf;vxf;vyf;vzf;mf;thetaf;psif];
 
-%% PS framework
-N     = 24;  % input this number to be even to adjust given initial guess 
-[tau,D] = cheb(N);
-tau  =  flip(tau);
-D    = -D;
-
-options = optimoptions("fmincon",'Algorithm','interior-point','Display','iter',...
-                       'MaxFunctionEvaluations',1000000,'MaxIterations',100000);
 
 
 %% Limits on states
@@ -102,8 +108,8 @@ vzU = inf*ones(N+1,1);
 
 MU  = m0*ones(N+1,1);
 
-thetaU = deg2rad(100)*ones(N+1,1);
-psiU   = deg2rad(100)*ones(N+1,1);
+thetaU = deg2rad(180)*ones(N+1,1);
+psiU   = deg2rad(180)*ones(N+1,1);
 
 uthetaU = deg2rad(2)*ones(N+1,1);
 upsiU   = deg2rad(2)*ones(N+1,1);
@@ -133,35 +139,38 @@ PL = [xL;yL;zL;vxL;vyL;vzL;ML;thetaL;psiL;uthetaL;upsiL;tfL];
 
 %% initial guess
 
-xg = linspace(x0,xf,N+1)';
-yg = linspace(y0,yf,N+1)';
-zg = linspace(z0,zf,N+1)';
+% Pg = guessFn(D,N,tau,ic0,param);
+% M  = Pg(6*N+7:7*N+7);
 
-vxg  = linspace(10,200,N+1)';%[linspace(2,500,round(0.8*N))';linspace(500,10,round(0.2*N)+1)'];
-vyg  = linspace(10,200,N+1)';%[linspace(2,500,round(0.8*N))';linspace(500,10,round(0.2*N)+1)'];
-vzg  = linspace(10,200,N+1)';%[linspace(2,500,round(0.8*N))';linspace(500,10,round(0.2*N)+1)'];
-
+% xg = linspace(x0,xf,N+1)';
+% yg = linspace(y0,yf,N+1)';
+% zg = linspace(z0,zf,N+1)';
+% 
+% vxg  = [linspace(vx0,100,round(0.8*N))';linspace(105,vxf,round(0.2*N)+1)'];
+% vyg  = [linspace(vy0,300,round(0.8*N))';linspace(305,vyf,round(0.2*N)+1)'];
+% vzg  = [linspace(vz0,500,round(0.8*N))';linspace(505,vzf,round(0.2*N)+1)'];
+% 
 % Mg   = [linspace(m0,m0,round(0.8*N))';linspace(m0,0.6*m0,round(0.2*N)+1)'];%
-Mg   = linspace(m0,0.7*m0,N+1)';
+% % Mg   = linspace(m0,0.7*m0,N+1)';
+% 
+% thetag = linspace(deg2rad(30),deg2rad(90),N+1)';
+% psig   = linspace(deg2rad(30),deg2rad(90),N+1)';
+% 
+% uthetag = linspace(-deg2rad(2),deg2rad(2),N+1)';
+% upsig   = linspace(-deg2rad(2),deg2rad(2),N+1)';
+% 
+% tfg  = 350;
+% 
+% Pg = [xg;yg;zg;vxg;vyg;vzg;Mg;thetag;psig;uthetag;upsig;tfg];
 
-thetag = linspace(deg2rad(30),deg2rad(90),N+1)';
-psig   = linspace(deg2rad(30),deg2rad(90),N+1)';
-
-uthetag = linspace(-deg2rad(2),deg2rad(2),N+1)';
-upsig   = linspace(-deg2rad(2),deg2rad(2),N+1)';
-
-tfg  = 200;
-
-Pg = [xg;yg;zg;vxg;vyg;vzg;Mg;thetag;psig;uthetag;upsig;tfg];
-
-% load guess.mat
-% Pg = Popt;
+load guess_40_lgr_sqp.mat
+Pg = Popt;
 
 %% fmincon
 
 
 jfun    = @(P) objfn(P,N);
-% nonlcon = @(P) nonlineardynamics(P,D,N,ic0,icf,param);
+ % nonlcon = @(P) nonlineardynamics(P,D,N,ic0,icf,param);
 nonlcon = @(P) nonldy(P,D,N,ic0,icf,param);
 
 tic
@@ -170,7 +179,10 @@ Popt = fmincon(jfun,Pg,[],[],[],[],PL,PU,nonlcon,options);
 
 elapsed_time = toc
 
+M = Popt(6*N+7:7*N+7);
+
+M(end)
 tf = Popt(end)
-% post_process(Popt,N,D,tau,param)
+post_process(Popt,N,D,tau,param)
 
 

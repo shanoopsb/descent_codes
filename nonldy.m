@@ -24,6 +24,7 @@ g0  = param.g0;
 T = 2/tf*D*M*(-Isp*g0);
 
 for i = 1:N+1
+    
     Y = [x(i);y(i);z(i);vx(i);vy(i);vz(i);M(i)];
     U = [T(i);theta(i);psi(i)];
 
@@ -36,23 +37,25 @@ for i = 1:N+1
     vydot(i,1) = dy(5);
     vzdot(i,1) = dy(6);
     mdot(i,1) =  dy(7);
+
 end
 
 ceqx  = 2/tf*D*x - xdot;
-ceqy  = 2/tf*D*y - ydot;
-ceqz  = 2/tf*D*z - zdot;
 ceqvx = 2/tf*D*vx - vxdot;
+ceqy  = 2/tf*D*y - ydot;
 ceqvy = 2/tf*D*vy - vydot;
+ceqz  = 2/tf*D*z - zdot;
 ceqvz = 2/tf*D*vz - vzdot;
 
-ceqm  = 2/tf*D*M - mdot;
+% ceqm  = 2/tf*D*M - mdot;
 
 cequt = 2/tf*D*theta - utheta;
 cequp = 2/tf*D*psi   - upsi;
 
-ceq = [ceqx;ceqy;ceqz;ceqvx;ceqvy;ceqvz;ceqm;cequt;cequp];
+ceq = [ceqx;ceqvx;ceqy;ceqvy;ceqz;ceqvz;cequt;cequp];
 
 % Extract initial conditions
+
 x0   = ic0(1); y0   = ic0(2); z0  = ic0(3);
 vx0  = ic0(4); vy0  = ic0(5); vz0 = ic0(6);
 m0   = ic0(7);
@@ -87,9 +90,16 @@ bf(7,1) = theta(N+1) - thetaf;
 
 ceq = [ceq;bi;bf];
 
+% ceqT = T(1:13) - 1e-10;
+% ceq = [ceq;ceqT];
 
 Tmax = param.Tmax;
 c(1:N+1,1)     = -T + 1e-10;
 c(N+2:2*N+2,1) =  T - Tmax;
+% c(2*N+3,1)     = -M(N+1) + mf;
+% c = [c;tf-60];
+% cT = T(1:N) - T(2:N+1);
+% 
+% c = [c;cT];
 
 end

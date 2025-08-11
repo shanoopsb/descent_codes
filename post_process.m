@@ -30,47 +30,47 @@ T = 2/tf*D*M*(-Isp*g0);
 
 
 figure(1)
-plot(Tout,x/1000,'ro','DisplayName','x')
+plot(Tout,x/1000,'r-.','DisplayName','x')
 hold on
-plot(Tout,y/1000,'go','DisplayName','y')
-plot(Tout,abs(z)/1000,'bo','DisplayName','abs(z)')
+plot(Tout,y/1000,'g-.','DisplayName','y')
+plot(Tout,abs(z)/1000,'b-.','DisplayName','abs(z)')
 xlabel("Time (s)")
 ylabel("position (km)")
 legend("Location","best")
 
 figure(2)
-plot(Tout,vx,'ro','DisplayName','vx')
+plot(Tout,vx,'r-.','DisplayName','vx')
 hold on
-plot(Tout,vy,'go','DisplayName','vy')
-plot(Tout,vz,'bo','DisplayName','vzv')
+plot(Tout,vy,'g-.','DisplayName','vy')
+plot(Tout,vz,'b-.','DisplayName','vzv')
 xlabel("Time (s)")
 ylabel("velocity (m/s)")
 legend("Location","best")
 
 figure(3)
-plot(Tout,rad2deg(theta),'ro','DisplayName','\theta')
+plot(Tout,rad2deg(theta),'r-.','DisplayName','\theta')
 hold on
-plot(Tout,rad2deg(psi),'bo','DisplayName','\psi')
+plot(Tout,rad2deg(psi),'b-.','DisplayName','\psi')
 xlabel("Time (s)")
 ylabel("\theta & \psi (deg)")
 legend("Location","best")
 
 figure(4)
-plot(Tout,rad2deg(utheta),'ro','DisplayName','u_{\theta}')
+plot(Tout,rad2deg(utheta),'r-.','DisplayName','u_{\theta}')
 hold on
-plot(Tout,rad2deg(upsi),'bo','DisplayName','u_{\psi}')
+plot(Tout,rad2deg(upsi),'b-.','DisplayName','u_{\psi}')
 xlabel("Time (s)")
 ylabel("u_{\theta} & u_{\psi} (deg/s)")
 legend("Location","best")
 
 figure(5)
-plot(Tout,M,'ro','DisplayName',"Mass")
+plot(Tout,M,'r-.','DisplayName',"Mass")
 xlabel("Time (s)")
 ylabel("Mass (kg)")
 legend("Location","best")
 
 figure(6)
-plot(Tout,T/1000,'ro','DisplayName',"Thrust")
+plot(Tout,T/1000,'r-.','DisplayName',"Thrust")
 xlabel("Time (s)")
 ylabel("Thrust (kN)")
 legend("Location","best")

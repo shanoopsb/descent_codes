@@ -1,0 +1,51 @@
+function x = Radau_roots(N)
+% Evaluate roots of R_n(x) = P_n(x) - P_{n-1}(x) in [-1,1]
+
+
+Np = N+1;
+x = cos(pi*(0:N)'/N);    % Initial guess: Chebyshev-like
+x = flipud(x);           % Order from -1 to 1
+% x(1) = -1;               % Fix left endpoint
+
+xold = 2 * ones(size(x));
+P = zeros(N+1, N+1);     % Legendre polynomial table
+
+j = 0;
+while max(abs(x-xold)) > eps
+
+    xold = x;
+
+    P(:,1) = 1;
+    P(:,2) = x;
+    
+
+    for k = 2:N
+        P(:,k+1) = 1/k*((2*k-1)*x.*P(:,k) - (k-1)*P(:,k-1));
+    end
+    
+    Rn  = P(:,N+1) - P(:,N);
+    
+    pd1 = Np*((P(:,N)  - x.*P(:,Np))./(1 - x.^2));
+    pd2 = N *((P(:,N-1) - x.*P(:,N))./(1 - x.^2));
+
+    Rnd = pd1 - pd2;
+
+    if j == 0
+        
+        
+
+    end
+   
+    x(2:end-1,1) = xold(2:end-1) - Rn(2:end-1)./Rnd(2:end-1);
+    
+
+    j = j+1;
+end
+
+end
+
+% function val = Rn(n,x)
+% 
+% val = Legendre_poly(n,x) - Legendre_poly(n-1,x);
+% 
+% end
